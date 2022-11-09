@@ -32,6 +32,9 @@
     "features": {
         "git": "os-provided",
         "aws-cli": "latest",
+        //to use with samlocal. We need to mount directory. Easiest way is with docker-in-docker approach
+        //refer to https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker-compose#summary
+        //for more info
         "docker-in-docker": "20.10"
     }
 }
