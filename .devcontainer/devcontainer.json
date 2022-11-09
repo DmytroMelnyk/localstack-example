@@ -1,0 +1,37 @@
+{
+    "name": "Python 3",
+    "dockerComposeFile": "docker-compose.yaml",
+    "service": "localstack-example",
+    "workspaceFolder": "/cdk_workshop",
+
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "python.defaultInterpreterPath": "/usr/local/bin/python",
+                "python.linting.enabled": true,
+                "python.linting.pylintEnabled": true,
+                "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
+                "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
+                "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
+                "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
+                "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
+                "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
+                "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
+                "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
+                "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance"
+            ]
+        }
+    },
+
+    "postCreateCommand": "bash -i /cdk_workshop/.devcontainer/install.sh",
+    "remoteUser": "vscode",
+    "features": {
+        "git": "os-provided",
+        "aws-cli": "latest",
+        "docker-in-docker": "20.10"
+    }
+}
