@@ -1,5 +1,7 @@
 # Welcome to your CDK Python project with LocalStack!
 
+!! If you run this with docker on WINDOWS, you should change install.sh endings to CRLF -> LF manually in VSCode
+
 For better cdklocal experience you should set `DEFAULT_REGION` env variable. In that case you won't need to provide `--region` parameter to `awslocal` commands. You should use this variable when deploying your stack. It's worth to mention that you could have `$(aws configure get region)` already set, but it's not used with `awslocal`. You can also use `aws ... --endpoint-url http://localhost:4566` commands instead of `awslocal`. In any case, pay attention to the region you use.
 
 Domain `localhost.localstack.cloud` resolves to `127.0.0.1`.
