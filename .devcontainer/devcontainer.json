@@ -1,0 +1,52 @@
+{
+    "name": "localstack.example",
+    "dockerComposeFile": "docker-compose.yaml",
+    "service": "localstack",
+    "workspaceFolder": "/cdk_workshop",
+    "customizations": {
+        "vscode": {
+            "settings": {
+                "editor.formatOnSave": true,
+                "editor.formatOnSaveMode": "file",
+                "python.autoComplete.extraPaths": [],
+                "python.analysis.extraPaths": [],
+                "python.analysis.typeCheckingMode": "basic",
+                "python.analysis.autoImportCompletions": true,
+                "python.analysis.autoFormatStrings": true,
+                "python.testing.pytestArgs": [
+                    "."
+                ],
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestEnabled": true,
+                "python.formatting.provider": "none",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.ruff": true,
+                        "source.organizeImports": true
+                    }
+                },
+                "[json]": {
+                    "editor.defaultFormatter": "vscode.json-language-features"
+                },
+                "files.eol": "\n"
+            },
+            "extensions": [
+                "ms-python.python",
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter",
+                "charliermarsh.ruff"
+            ]
+        }
+    },
+    "postCreateCommand": "bash -i /cdk_workshop/.devcontainer/install.sh",
+    "remoteUser": "vscode",
+    "features": {
+        "git": "os-provided",
+        "aws-cli": "latest",
+        //to use with samlocal. We need to mount directory. Easiest way is with docker-in-docker approach
+        //refer to https://github.com/microsoft/vscode-dev-containers/tree/main/containers/docker-from-docker-compose#summary
+        //for more info
+        "docker-in-docker": "20.10"
+    }
+}
