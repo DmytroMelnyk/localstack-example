@@ -11,11 +11,6 @@ ENV PYTHONFAULTHANDLER=1 \
     PIP_TARGET=$LAMBDA_TASK_ROOT/lambda \
     PYTHONPATH=$LAMBDA_TASK_ROOT/lambda 
 
-# Extra lines to install the agent here
-RUN curl -O https://lambda-insights-extension-arm64.s3-ap-northeast-1.amazonaws.com/amazon_linux/lambda-insights-extension-arm64.rpm && \
-    rpm -U lambda-insights-extension-arm64.rpm && \
-    rm -f lambda-insights-extension-arm64.rpm
-
 WORKDIR $LAMBDA_TASK_ROOT/lambda 
 COPY common/requirements.txt common/
 RUN pip install -r common/requirements.txt
