@@ -8,7 +8,7 @@ Domain `localhost.localstack.cloud` resolves to `127.0.0.1`.
 
 1. Open in VSCode as container
 1. Bootstrap with: `cdklocal bootstrap`
-1. Deploy with: `cdklocal deploy`
+1. Deploy with: `cdklocal deploy --all`
 1. Perform few calls with curl: `curl https://$(awslocal apigateway get-rest-apis --query "items[?name=='hello'].{id:id}" --output text).execute-api.localhost.localstack.cloud:4566/prod/path`
 
 ### DynamoDb
