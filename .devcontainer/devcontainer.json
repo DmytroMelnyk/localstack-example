@@ -1,32 +1,43 @@
 {
     "name": "Python 3",
     "dockerComposeFile": "docker-compose.yaml",
-    "service": "localstack-example",
+    "service": "localstack",
     "workspaceFolder": "/cdk_workshop",
-
     "customizations": {
         "vscode": {
             "settings": {
-                "python.defaultInterpreterPath": "/usr/local/bin/python",
-                "python.linting.enabled": true,
-                "python.linting.pylintEnabled": true,
-                "python.formatting.autopep8Path": "/usr/local/py-utils/bin/autopep8",
-                "python.formatting.blackPath": "/usr/local/py-utils/bin/black",
-                "python.formatting.yapfPath": "/usr/local/py-utils/bin/yapf",
-                "python.linting.banditPath": "/usr/local/py-utils/bin/bandit",
-                "python.linting.flake8Path": "/usr/local/py-utils/bin/flake8",
-                "python.linting.mypyPath": "/usr/local/py-utils/bin/mypy",
-                "python.linting.pycodestylePath": "/usr/local/py-utils/bin/pycodestyle",
-                "python.linting.pydocstylePath": "/usr/local/py-utils/bin/pydocstyle",
-                "python.linting.pylintPath": "/usr/local/py-utils/bin/pylint"
+                "editor.formatOnSave": true,
+                "editor.formatOnSaveMode": "file",
+                "python.autoComplete.extraPaths": [],
+                "python.analysis.extraPaths": [],
+                "python.analysis.typeCheckingMode": "basic",
+                "python.analysis.autoImportCompletions": true,
+                "python.analysis.autoFormatStrings": true,
+                "python.testing.pytestArgs": [
+                    "."
+                ],
+                "python.testing.unittestEnabled": false,
+                "python.testing.pytestEnabled": true,
+                "python.formatting.provider": "none",
+                "[python]": {
+                    "editor.defaultFormatter": "ms-python.black-formatter",
+                    "editor.codeActionsOnSave": {
+                        "source.fixAll.ruff": true,
+                        "source.organizeImports": true
+                    }
+                },
+                "[json]": {
+                    "editor.defaultFormatter": "vscode.json-language-features"
+                }
             },
             "extensions": [
                 "ms-python.python",
-                "ms-python.vscode-pylance"
+                "ms-python.vscode-pylance",
+                "ms-python.black-formatter",
+                "charliermarsh.ruff"
             ]
         }
     },
-
     "postCreateCommand": "bash -i /cdk_workshop/.devcontainer/install.sh",
     "remoteUser": "vscode",
     "features": {
