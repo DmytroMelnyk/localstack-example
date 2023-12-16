@@ -1,8 +1,10 @@
 import platform
+from typing import cast
 
 from aws_cdk import (
     Duration,
     RemovalPolicy,
+    Size,
     Stack,
 )
 from aws_cdk import (
@@ -74,6 +76,7 @@ class CdkWorkshopStack(Stack):
         queue = sqs.Queue(
             self,
             "CdkWorkshopQueue",
+            queue_name="sqs-queue",
             visibility_timeout=Duration.seconds(300),
         )
 
@@ -94,17 +97,6 @@ class CdkWorkshopStack(Stack):
         )
         table.grant_read_write_data(my_lambda)
         # self.insert_data_to_dynamodb(table)
-
-        # ApiGatewayToLambda(self, "endpoint", existing_lambda_obj=my_lambda)
-        apigw.LambdaRestApi(
-            self,
-            id="hello",
-            handler=my_lambda
-            if not self.is_canary
-            else self.blueGreenDeployment(
-                my_lambda, codedeploy.LambdaDeploymentConfig.CANARY_10_PERCENT_5_MINUTES
-            ),
-        )
 
         logs.QueryDefinition(
             self,
@@ -133,16 +125,68 @@ class CdkWorkshopStack(Stack):
             timeout=timeout,
         )
 
-        apigw.LambdaRestApi(
+        gateway = apigw.RestApi(
             self,
-            id="api",
-            handler=api_lambda
+            id="main-gateway",
+            binary_media_types=["image/*", "multipart/form-data"],
+            rest_api_name="main-gateway",
+            # eliminate OPTIONS calls to lambda
+            default_cors_preflight_options=apigw.CorsOptions(
+                # TODO: Do not allow all origins (use our front-ends). Refer to CSRF
+                allow_origins=apigw.Cors.ALL_ORIGINS,
+                allow_methods=apigw.Cors.ALL_METHODS,
+                allow_headers=["*"],
+                allow_credentials=True,
+                max_age=Duration.days(1),
+            ),
+            # https://openliberty.io/blog/2020/04/22/http-response-compression.html
+            # https://blog.tier1app.com/2016/05/19/improve-webservice-api-response-time-http-compression/
+            min_compression_size=Size.kibibytes(2),
+            # endpoint_configuration={"types": [apigw.EndpointType.REGIONAL]},
+            default_method_options=apigw.MethodOptions(authorization_type=apigw.AuthorizationType.NONE),
+            deploy_options=apigw.StageOptions(
+                access_log_format=apigw.AccessLogFormat.clf(),
+                access_log_destination=apigw.LogGroupLogDestination(
+                logs.LogGroup(
+                        self,
+                        "fast-api-access-log",
+                        log_group_name="/aws/lambda/main-gateway",
+                        removal_policy=RemovalPolicy.DESTROY,
+                    )
+                ),            
+                logging_level=apigw.MethodLoggingLevel.INFO,
+                tracing_enabled=True
+            ),
+            cloud_watch_role=True,
+        )
+
+        gateway.root.add_resource("api").add_proxy(
+            default_integration=apigw.LambdaIntegration(api_lambda
             if not self.is_canary
             else self.blueGreenDeployment(
                 api_lambda,
                 codedeploy.LambdaDeploymentConfig.CANARY_10_PERCENT_5_MINUTES,
-            ),
-        )
+            ), # type: ignore
+        ))
+        
+        gateway.root.add_resource("hello").add_proxy(
+            default_integration=apigw.LambdaIntegration(my_lambda
+            if not self.is_canary
+            else self.blueGreenDeployment(
+                my_lambda, codedeploy.LambdaDeploymentConfig.CANARY_10_PERCENT_5_MINUTES
+            ), # type: ignore
+        ))
+
+        # ApiGatewayToLambda(self, "endpoint", existing_lambda_obj=my_lambda)
+        # apigw.LambdaRestApi(
+        #     self,
+        #     id="hello",
+        #     handler=my_lambda
+        #     if not self.is_canary
+        #     else self.blueGreenDeployment(
+        #         my_lambda, codedeploy.LambdaDeploymentConfig.CANARY_10_PERCENT_5_MINUTES
+        #     ), # type: ignore
+        # )
 
         trigger_lambda: Function = self.create_lambda(
             "TriggerHandler",
@@ -239,7 +283,7 @@ class CdkWorkshopStack(Stack):
         new_version = function.current_version
         new_version.apply_removal_policy(RemovalPolicy.RETAIN)
         alias: _lambda.Alias = _lambda.Alias(
-            self, "BlueGreenAlias", alias_name="live", version=new_version
+            self, "BlueGreenAlias", alias_name="live", version=cast(_lambda.IVersion, new_version)
         )
 
         lambda_alarm_errors = cloudwatch.Alarm(

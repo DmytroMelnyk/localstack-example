@@ -9,7 +9,7 @@ class UserModel(Model):
     """
 
     class Meta:
-        # host = "http://localstack:4566"
+        host = "http://localstack:4566"
         table_name = "dynamodb-user"
 
     email = UnicodeAttribute(null=True)
@@ -19,7 +19,7 @@ class UserModel(Model):
 
 class ParentModel(Model):
     class Meta:
-        # host = "http://localstack:4566"
+        host = "http://localstack:4566"
         table_name = "polymorphic_table"
 
     id = UnicodeAttribute(hash_key=True)
