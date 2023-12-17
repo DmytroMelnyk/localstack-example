@@ -98,24 +98,25 @@ class CdkWorkshopStack(Stack):
         table.grant_read_write_data(my_lambda)
         # self.insert_data_to_dynamodb(table)
 
-        logs.QueryDefinition(
-            self,
-            "ColdStart",
-            query_definition_name="cold-start-query",
-            query_string=logs.QueryString(parse="""filter @type = "REPORT"
-              | stats count(@type) as countInvocations, 
-                count(@initDuration) as countColdStarts, 
-                (count(@initDuration)/count(@type))*100 as percentageColdStarts,
-                max(@initDuration) as maxColdStartTime,
-                avg(@initDuration) as avgColdStartTime,
-                avg(@duration) as averageDuration,
-                max(@duration) as maxDuration,
-                min(@duration) as minDuration,
-                avg(@maxMemoryUsed) as averageMemoryUsed,
-                max(@memorySize) as memoryAllocated, 
-                (avg(@maxMemoryUsed)/max(@memorySize))*100 as percentageMemoryUsed 
-              by bin(1h) as timeFrame""")
-        )
+        # not supported by localstack
+        # logs.QueryDefinition(
+        #     self,
+        #     "ColdStart",
+        #     query_definition_name="cold-start-query",
+        #     query_string=logs.QueryString(parse="""filter @type = "REPORT"
+        #       | stats count(@type) as countInvocations, 
+        #         count(@initDuration) as countColdStarts, 
+        #         (count(@initDuration)/count(@type))*100 as percentageColdStarts,
+        #         max(@initDuration) as maxColdStartTime,
+        #         avg(@initDuration) as avgColdStartTime,
+        #         avg(@duration) as averageDuration,
+        #         max(@duration) as maxDuration,
+        #         min(@duration) as minDuration,
+        #         avg(@maxMemoryUsed) as averageMemoryUsed,
+        #         max(@memorySize) as memoryAllocated, 
+        #         (avg(@maxMemoryUsed)/max(@memorySize))*100 as percentageMemoryUsed 
+        #       by bin(1h) as timeFrame""")
+        # )
 
         api_lambda = self.create_lambda(
             "ApiHandler",

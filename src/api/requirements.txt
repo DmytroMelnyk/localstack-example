@@ -1,2 +1,2 @@
-pynamodb==5.5.0
+pynamodb==5.5.1
 #https://github.com/medaka0213/DynamoDB-SingleTable
